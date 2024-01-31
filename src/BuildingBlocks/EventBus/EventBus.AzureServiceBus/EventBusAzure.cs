@@ -54,7 +54,11 @@ namespace EventBus.AzureServiceBus
                 Body = boyArr,
                 Label = eventName,
             };
+    
             topicClient.SendAsync(message).GetAwaiter().GetResult();
+           
+           
+           
         }
 
         public override void Subscribe<T, TH>()
@@ -82,6 +86,7 @@ namespace EventBus.AzureServiceBus
                     .RemoveRuleAsync(eventName)
                     .GetAwaiter()
                     .GetResult();
+               
             }
             catch (MessagingEntityNotFoundException)
             {
@@ -89,7 +94,7 @@ namespace EventBus.AzureServiceBus
                 
             }
 
-            logger.LogInformation("Unsubscribing from event {eventName}",eventName);
+            logger.LogInformation("Unsubscribing from event {eventName}", eventName);
             SubsManager.RemoveSubcription<T, TH>();
         }
 

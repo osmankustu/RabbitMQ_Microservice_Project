@@ -21,51 +21,108 @@ namespace EventBus.UnitTest
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void subscribe_event_on_rabbitmq_test()
         {
-            
-
+            //If you want to consume, remove the unsubscribe method
             services.AddSingleton<IEventBus>(sp =>
             {
-                EventBusConfig config = new()
-                {
-                    ConnectionRetryCount = 5,
-                    SubscriberClientAppName = "EventBus.UnitTest",
-                    DefaultTopicName = "Osmankustu",
-                    EventBusType = EventBusType.RabbitMQ,
-                    EventNameSuffix = "IntegrationEvent",
-                    Connection = new ConnectionFactory()
-                    {
-                        HostName = "192.168.1.39",
-                        UserName = "root",
-                        Password = "root",
-                        Port = 5672,
-                        AuthMechanisms = new List<IAuthMechanismFactory>() { default},
-                        TopologyRecoveryExceptionHandler = default,
-                        Uri= new Uri("amqp://root:root@192.168.1.39:5672"),
-                        
-
-                    }
-                };
-                return EventBusFactory.Create(config, sp);
+                return EventBusFactory.Create(GetRabbitMQConfig(), sp);
             });
-
-           
-
 
             var service = services.BuildServiceProvider();
             var eventBus = service.GetRequiredService<IEventBus>();
 
 
             eventBus.Subscribe<OrderCreatedIntegrationEvent,OrderCreatedIntegrationEventHandler>();
-            var i = 0;
-            while (i<100)
-            {
-               var x = new OrderCreatedIntegrationEvent(Guid.NewGuid());
-                eventBus.Publish(x);
-                i++;
-            }
-            eventBus.Unsubscribe<OrderCreatedIntegrationEvent,OrderCreatedIntegrationEventHandler>();
+            //eventBus.Unsubscribe<OrderCreatedIntegrationEvent,OrderCreatedIntegrationEventHandler>();
         }
+
+        [TestMethod]
+        public void subscribe_event_on_AzureServiceBus_test()
+        {
+            //If you want to consume, remove the unsubscribe method
+            services.AddSingleton<IEventBus>(sp =>
+            {
+                return EventBusFactory.Create(GetAzureServiceBusConfig(), sp);
+            });
+
+            var service = services.BuildServiceProvider();
+            var eventBus = service.GetRequiredService<IEventBus>();
+
+            // service bus basic tier is not supported topics 
+
+            eventBus.Subscribe<OrderCreatedIntegrationEvent, OrderCreatedIntegrationEventHandler>();
+           
+            OrderCreatedIntegrationEvent x = new OrderCreatedIntegrationEvent(Guid.NewGuid());
+            //eventBus.Unsubscribe<OrderCreatedIntegrationEvent, OrderCreatedIntegrationEventHandler>();
+
+        }
+
+        [TestMethod]
+        public void send_message_to_rabbitmq_test()
+        {
+            //If you want to consume, remove the unsubscribe method
+            services.AddSingleton<IEventBus>(sp =>
+            {
+                return EventBusFactory.Create(GetRabbitMQConfig(), sp);
+            });
+
+            var sp = services.BuildServiceProvider();
+            var eventBus = sp.GetRequiredService<IEventBus>();
+
+            eventBus.Publish(new OrderCreatedIntegrationEvent(Guid.NewGuid()));
+            
+        }
+
+        [TestMethod]
+        public void send_message_to_azureServiceBus_test()
+        {
+            services.AddSingleton<IEventBus>(sp =>
+            {
+                return EventBusFactory.Create(GetAzureServiceBusConfig(), sp);
+            });
+
+            var sp = services.BuildServiceProvider();
+            var eventBus = sp.GetRequiredService<IEventBus>();
+
+            eventBus.Publish(new OrderCreatedIntegrationEvent(Guid.NewGuid()));
+        }
+
+        private EventBusConfig GetRabbitMQConfig()
+        {
+            return new EventBusConfig()
+            {
+                ConnectionRetryCount = 5,
+                SubscriberClientAppName = "EventBus.UnitTest",
+                DefaultTopicName = "Osmankustu",
+                EventBusType = EventBusType.RabbitMQ,
+                EventNameSuffix = "IntegrationEvent",
+                Connection = new ConnectionFactory()
+                {
+                    HostName = "192.168.1.39",
+                    UserName = "root",
+                    Password = "root",
+                    Port = 5672,
+                    AuthMechanisms = new List<IAuthMechanismFactory>() { default },
+                    TopologyRecoveryExceptionHandler = default,
+                    Uri = new Uri("amqp://root:root@192.168.1.39:5672"),
+                }
+
+            };
+        }
+
+        private EventBusConfig GetAzureServiceBusConfig()
+        {
+            return new EventBusConfig()
+            {
+                ConnectionRetryCount = 5,
+                SubscriberClientAppName = "EventBus.UnitTest",
+                DefaultTopicName = "osmankustu",
+                EventBusType = EventBusType.AzureServiceBus,
+                EventNameSuffix = "IntegrationEvent",
+                EventBusConnectionString = "Endpoint=sb://osmankustu.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Iu1sXsAIoVfGS68o0PZ+qaWHiDCEjwak7+ASbJ4M67M="
+            };
+        }
+
     }
 }
