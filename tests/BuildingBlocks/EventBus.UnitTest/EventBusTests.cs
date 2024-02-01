@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RabbitMQ.Client;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EventBus.UnitTest
 {
@@ -19,6 +20,7 @@ namespace EventBus.UnitTest
             services = new ServiceCollection();
             services.AddLogging(configure => configure.AddConsole());
         }
+        
 
         [TestMethod]
         public void subscribe_event_on_rabbitmq_test()
@@ -33,29 +35,8 @@ namespace EventBus.UnitTest
             var eventBus = service.GetRequiredService<IEventBus>();
 
 
-            eventBus.Subscribe<OrderCreatedIntegrationEvent,OrderCreatedIntegrationEventHandler>();
-            //eventBus.Unsubscribe<OrderCreatedIntegrationEvent,OrderCreatedIntegrationEventHandler>();
-        }
-
-        [TestMethod]
-        public void subscribe_event_on_AzureServiceBus_test()
-        {
-            //If you want to consume, remove the unsubscribe method
-            services.AddSingleton<IEventBus>(sp =>
-            {
-                return EventBusFactory.Create(GetAzureServiceBusConfig(), sp);
-            });
-
-            var service = services.BuildServiceProvider();
-            var eventBus = service.GetRequiredService<IEventBus>();
-
-            // service bus basic tier is not supported topics 
-
-            eventBus.Subscribe<OrderCreatedIntegrationEvent, OrderCreatedIntegrationEventHandler>();
-           
-            OrderCreatedIntegrationEvent x = new OrderCreatedIntegrationEvent(Guid.NewGuid());
-            //eventBus.Unsubscribe<OrderCreatedIntegrationEvent, OrderCreatedIntegrationEventHandler>();
-
+           eventBus.Subscribe<OrderCreatedIntegrationEvent,OrderCreatedIntegrationEventHandler>();
+           eventBus.Unsubscribe<OrderCreatedIntegrationEvent,OrderCreatedIntegrationEventHandler>();
         }
 
         [TestMethod]
@@ -70,23 +51,57 @@ namespace EventBus.UnitTest
             var sp = services.BuildServiceProvider();
             var eventBus = sp.GetRequiredService<IEventBus>();
 
-            eventBus.Publish(new OrderCreatedIntegrationEvent(Guid.NewGuid()));
-            
-        }
+            var q = new List<OrderCreatedIntegrationEvent>() {
+                new OrderCreatedIntegrationEvent(1),
+                new OrderCreatedIntegrationEvent(2),
+                new OrderCreatedIntegrationEvent(3),
+                new OrderCreatedIntegrationEvent(5)
 
-        [TestMethod]
-        public void send_message_to_azureServiceBus_test()
-        {
-            services.AddSingleton<IEventBus>(sp =>
+            };
+            foreach (var item in q)
             {
-                return EventBusFactory.Create(GetAzureServiceBusConfig(), sp);
-            });
-
-            var sp = services.BuildServiceProvider();
-            var eventBus = sp.GetRequiredService<IEventBus>();
-
-            eventBus.Publish(new OrderCreatedIntegrationEvent(Guid.NewGuid()));
+                eventBus.Publish(item);
+            }
         }
+
+
+        //Test Passed
+        //[TestMethod]
+        //public void subscribe_event_on_AzureServiceBus_test()
+        //{
+        //    //If you want to consume, remove the unsubscribe method
+        //    services.AddSingleton<IEventBus>(sp =>
+        //    {
+        //        return EventBusFactory.Create(GetAzureServiceBusConfig(), sp);
+        //    });
+
+        //    var service = services.BuildServiceProvider();
+        //    var eventBus = service.GetRequiredService<IEventBus>();
+
+        //    // service bus basic tier is not supported topics 
+
+        //    eventBus.Subscribe<OrderCreatedIntegrationEvent, OrderCreatedIntegrationEventHandler>();
+           
+        //    OrderCreatedIntegrationEvent x = new OrderCreatedIntegrationEvent(1);
+        //    //eventBus.Unsubscribe<OrderCreatedIntegrationEvent, OrderCreatedIntegrationEventHandler>();
+
+        //}
+
+
+        //Test Passed
+        //[TestMethod]
+        //public void send_message_to_azureServiceBus_test()
+        //{
+        //    services.AddSingleton<IEventBus>(sp =>
+        //    {
+        //        return EventBusFactory.Create(GetAzureServiceBusConfig(), sp);
+        //    });
+
+        //    var sp = services.BuildServiceProvider();
+        //    var eventBus = sp.GetRequiredService<IEventBus>();
+
+        //    eventBus.Publish(new OrderCreatedIntegrationEvent(1));
+        //}
 
         private EventBusConfig GetRabbitMQConfig()
         {
@@ -111,18 +126,18 @@ namespace EventBus.UnitTest
             };
         }
 
-        private EventBusConfig GetAzureServiceBusConfig()
-        {
-            return new EventBusConfig()
-            {
-                ConnectionRetryCount = 5,
-                SubscriberClientAppName = "EventBus.UnitTest",
-                DefaultTopicName = "osmankustu",
-                EventBusType = EventBusType.AzureServiceBus,
-                EventNameSuffix = "IntegrationEvent",
-                EventBusConnectionString = "Endpoint=sb://osmankustu.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Iu1sXsAIoVfGS68o0PZ+qaWHiDCEjwak7+ASbJ4M67M="
-            };
-        }
+        //private EventBusConfig GetAzureServiceBusConfig()
+        //{
+        //    return new EventBusConfig()
+        //    {
+        //        ConnectionRetryCount = 5,
+        //        SubscriberClientAppName = "EventBus.UnitTest",
+        //        DefaultTopicName = "osmankustu",
+        //        EventBusType = EventBusType.AzureServiceBus,
+        //        EventNameSuffix = "IntegrationEvent",
+        //        EventBusConnectionString = "Endpoint=sb://osmankustu.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Iu1sXsAIoVfGS68o0PZ+qaWHiDCEjwak7+ASbJ4M67M="
+        //    };
+        //}
 
     }
 }

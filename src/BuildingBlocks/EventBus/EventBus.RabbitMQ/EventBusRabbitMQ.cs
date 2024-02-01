@@ -42,23 +42,6 @@ namespace EventBus.RabbitMQ
             SubsManager.OnEventRemoved += SubsManager_OnEventRemoved;
         }
 
-        private void SubsManager_OnEventRemoved(object? sender, string eventName)
-        {
-            eventName = ProcessEventName(eventName);
-            if (!persistentConnection.IsConnected)
-            {
-                persistentConnection.TryConnect();
-            }
-            consumerChannel.QueueUnbind(queue: eventName,
-                exchange: EventBusConfig.DefaultTopicName,
-                routingKey: eventName
-                );
-            if (SubsManager.IsEmpty)
-            {
-                consumerChannel.Close();
-            }
-        }
-
         public override void Publish(IntegrationEvent @event)
         {
             if (!persistentConnection.IsConnected)
@@ -75,7 +58,10 @@ namespace EventBus.RabbitMQ
             var eventName = @event.GetType().Name;
             eventName = ProcessEventName(eventName);
 
-            consumerChannel.ExchangeDeclare(exchange: EventBusConfig.DefaultTopicName, type: "direct");
+            consumerChannel.ExchangeDeclare(
+                exchange: EventBusConfig.DefaultTopicName,
+                type: "direct"
+                );
             var message = JsonConvert.SerializeObject(@event);
             var body = Encoding.UTF8.GetBytes(message);
 
@@ -91,7 +77,8 @@ namespace EventBus.RabbitMQ
                     arguments: null
                     );
 
-                consumerChannel.BasicPublish(exchange: EventBusConfig.DefaultTopicName,
+                consumerChannel.BasicPublish(
+                    exchange: EventBusConfig.DefaultTopicName,
                     routingKey:eventName,
                     mandatory:true,
                     basicProperties:properties,
@@ -110,14 +97,16 @@ namespace EventBus.RabbitMQ
                 {
                     persistentConnection.TryConnect();
                 }
-                consumerChannel.QueueDeclare(queue:GetSubName(eventName), //Consume edeceğimiz q nun daha önce oluştu mu oluşmadı mı ?
+                consumerChannel.QueueDeclare(
+                    queue:GetSubName(eventName), //Consume edeceğimiz q nun daha önce oluştu mu oluşmadı mı ?
                     durable:true,
                     exclusive:false,
                     autoDelete:false,
                     arguments:null
                     );
 
-                consumerChannel.QueueBind(queue: GetSubName(eventName),
+                consumerChannel.QueueBind(
+                    queue: GetSubName(eventName),
                     exchange: EventBusConfig.DefaultTopicName,
                     routingKey: eventName
                     );
@@ -125,13 +114,14 @@ namespace EventBus.RabbitMQ
             
             logger.LogInformation($"Subscribing to event {eventName} with {typeof(TH).Name}");
             SubsManager.AddSubscription<T, TH>();
+            StartBasicConsume(eventName);
+            
         }
 
         public override void Unsubscribe<T, TH>()
         {
             SubsManager.RemoveSubcription<T, TH>();
         }
-
 
         private IModel CreateConsumerChannel()
         {
@@ -141,11 +131,14 @@ namespace EventBus.RabbitMQ
             }
 
             var channel = persistentConnection.CreateModel();
-            channel.ExchangeDeclare(exchange: EventBusConfig.DefaultTopicName, type: "direct");
+            channel.ExchangeDeclare(
+                exchange: EventBusConfig.DefaultTopicName,
+                type: "direct"
+                );
             return channel;
         }
 
-        public void StartBasicConsume(string eventName)
+        private void StartBasicConsume(string eventName)
         {
             if(consumerChannel != null)
             {
@@ -168,12 +161,30 @@ namespace EventBus.RabbitMQ
             try
             {
                 await ProcessEvent(eventName, message);
+                logger.LogInformation("consumed event is {event} message is : {message}",eventName, message);
             }
             catch (Exception ex)
             {
-
+                logger.LogCritical("{eventName} not consumed exception message : {ex}",eventName,ex);
             }
             consumerChannel.BasicAck(e.DeliveryTag,multiple:false);
+        }
+
+        private void SubsManager_OnEventRemoved(object? sender, string eventName)
+        {
+            eventName = ProcessEventName(eventName);
+            if (!persistentConnection.IsConnected)
+            {
+                persistentConnection.TryConnect();
+            }
+            consumerChannel.QueueUnbind(queue: eventName,
+                exchange: EventBusConfig.DefaultTopicName,
+                routingKey: eventName
+                );
+            if (SubsManager.IsEmpty)
+            {
+                consumerChannel.Close();
+            }
         }
     }
 }

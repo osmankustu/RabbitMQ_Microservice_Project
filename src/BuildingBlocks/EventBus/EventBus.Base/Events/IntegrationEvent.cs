@@ -9,7 +9,7 @@ namespace EventBus.Base.Events
 {
     public class IntegrationEvent
     {
-        public IntegrationEvent(Guid id, DateTime createDate)
+        public IntegrationEvent(int id, DateTime createDate)
         {
             Id = id;
             CreateDate = createDate;
@@ -18,12 +18,12 @@ namespace EventBus.Base.Events
         [JsonConstructor]
         public IntegrationEvent()
         {
-            Id = Guid.NewGuid();
+            Id = new int();
             CreateDate = DateTime.Now;
         }
 
         [JsonProperty]
-        public Guid Id { get; private set; }
+        public int Id { get; private set; }
         [JsonProperty]
         public DateTime CreateDate { get; private set; }
     }

@@ -1,5 +1,6 @@
 ﻿using EventBus.Base.Abstract;
 using EventBus.UnitTest.Event.Events;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +14,7 @@ namespace EventBus.UnitTest.Event.EventHandlers
     {
         public Task Handle(OrderCreatedIntegrationEvent @event)
         {
-            
+            Debug.WriteLine("on ack message :{message} Create Date : {createDate}", @event.Id, @event.CreateDate);
             return Task.CompletedTask;
         }
     }
