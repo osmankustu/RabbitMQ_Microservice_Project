@@ -10,7 +10,7 @@ namespace EventBus.Base
     {
         public  int ConnectionRetryCount { get; set; } = 5;
        
-        public string DefaultTopicName { get; set; } = "testosmankustu";
+        public string DefaultTopicName { get; set; } = "osmankustu";
       
         public string EventBusConnectionString { get; set; } = String.Empty;
         

@@ -59,7 +59,7 @@ namespace EventBus.Base.Events
                     {
                         var handler = ServiceProvider.GetService(subscription.HandlerType);
                         if (handler == null) continue;
-                        var eventType = SubsManager.GetEventTypeByName($"{EventBusConfig.EventNamePrefix} {eventName}{EventBusConfig.EventNameSuffix}");
+                        var eventType = SubsManager.GetEventTypeByName($"{EventBusConfig.EventNamePrefix}{eventName}{EventBusConfig.EventNameSuffix}");
                         var integrationEvent = JsonConvert.DeserializeObject(message, eventType);
 
                         var concreteType = typeof(IIntegrationGenericEventHandler<>).MakeGenericType(eventType);

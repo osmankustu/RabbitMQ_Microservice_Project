@@ -62,6 +62,7 @@ namespace EventBus.RabbitMQ
                 exchange: EventBusConfig.DefaultTopicName,
                 type: "direct"
                 );
+            
             var message = JsonConvert.SerializeObject(@event);
             var body = Encoding.UTF8.GetBytes(message);
 
@@ -76,6 +77,12 @@ namespace EventBus.RabbitMQ
                     autoDelete: false,
                     arguments: null
                     );
+
+                consumerChannel.QueueBind(
+                   queue: GetSubName(eventName),
+                   exchange: EventBusConfig.DefaultTopicName,
+                   routingKey: eventName
+                   );
 
                 consumerChannel.BasicPublish(
                     exchange: EventBusConfig.DefaultTopicName,
@@ -112,7 +119,7 @@ namespace EventBus.RabbitMQ
                     );
             }
             
-            logger.LogInformation($"Subscribing to event {eventName} with {typeof(TH).Name}");
+           // logger.LogInformation($"Subscribing to event {eventName} with {typeof(TH).Name}");
             SubsManager.AddSubscription<T, TH>();
             StartBasicConsume(eventName);
             
@@ -161,7 +168,7 @@ namespace EventBus.RabbitMQ
             try
             {
                 await ProcessEvent(eventName, message);
-                logger.LogInformation("consumed event is {event} message is : {message}",eventName, message);
+               // logger.LogInformation("consumed event is {event} message is : {message}",eventName, message);
             }
             catch (Exception ex)
             {

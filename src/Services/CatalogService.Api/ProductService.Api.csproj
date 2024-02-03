@@ -3,13 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>7078a7bc-69e1-4137-af3b-2e44c5e27b5b</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..\..</DockerfileContext>
+    <ImplicitUsings>enable</ImplicitUsings> 
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Consul" Version="1.7.14.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.2" />

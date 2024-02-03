@@ -1,13 +1,11 @@
-using Polly;
-using ProductService.Api.Extensions;
-using ProductService.Api.Infrastructure.Context;
+using IdentityService.Api.Application.Services;
+using IdentityService.Api.Extensions;
 
-var builder = WebApplication.CreateBuilder(new WebApplicationOptions());
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.ConfigureDbContext(builder.Configuration);
+builder.Services.AddScoped<IIdentityService, IdentityService.Api.Application.Services.IdentityService>();
 builder.Services.ConfigureConsul(builder.Configuration);
-
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -17,12 +15,6 @@ var app = builder.Build();
 
 // Add middleware to the app.
 app.RegisterWithConsul(app.Configuration,app.Lifetime);
-app.MigrateDbContext<ProductContext>((context, services) =>
-{
-    var env = services.GetService<IWebHostEnvironment>();
-    var logger = services.GetService<ILogger<ProductContext>>();
-});
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

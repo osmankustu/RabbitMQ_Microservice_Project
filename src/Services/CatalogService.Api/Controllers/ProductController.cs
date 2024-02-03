@@ -22,7 +22,7 @@ namespace ProductService.Api.Controllers
         }
 
         [HttpGet]
-        [Route("product")]
+        [Route("items")]
         [ProducesResponseType(typeof(PaginatedProductsViewModel<Product>),(int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(IEnumerable<Product>),(int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
