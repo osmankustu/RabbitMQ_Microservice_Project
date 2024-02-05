@@ -39,13 +39,13 @@ Console.ReadLine();
             EventBusType = EventBusType.RabbitMQ,
             Connection = new ConnectionFactory()
             {
-                HostName = "192.168.1.39",
+                HostName = "192.168.1.3",
                 UserName = "root",
                 Password = "root",
                 Port = 5672,
                 AuthMechanisms = new List<IAuthMechanismFactory>() { default },
                 TopologyRecoveryExceptionHandler = default,
-                Uri = new Uri("amqp://root:root@192.168.1.39:5672"),
+                Uri = new Uri("amqp://root:root@192.168.1.3:5672"),
             }
         };
         return EventBusFactory.Create(conf, sp);
