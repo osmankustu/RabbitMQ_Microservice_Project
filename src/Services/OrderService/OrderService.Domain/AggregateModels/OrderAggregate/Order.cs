@@ -1,4 +1,5 @@
-﻿using OrderService.Domain.Events;
+﻿using OrderService.Domain.AggregateModels.BuyerAggregate;
+using OrderService.Domain.Events;
 using OrderService.Domain.SeedWork;
 using System;
 using System.Collections.Generic;
@@ -20,14 +21,14 @@ namespace OrderService.Domain.AggregateModels.OrderAggregate
         public OrderStatus OrderStatus { get; private set; }
         
         
-        private readonly List<OrderItem> _orderItems;
-        public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
+        private readonly List<Orderitem> _orderItems;
+        public IReadOnlyCollection<Orderitem> OrderItems => _orderItems;
         public Guid? PaymentMethodId { get; set; }
        
         protected Order()
         {
             Id = Guid.NewGuid();
-            _orderItems = new List<OrderItem>();
+            _orderItems = new List<Orderitem>();
         }
 
         public Order(string userName, Address address, int cardTypeId,string cardNumber,string cardSecurityNumber,
@@ -55,7 +56,7 @@ namespace OrderService.Domain.AggregateModels.OrderAggregate
 
         public void AddOrderItem(int productId,string prodductName,decimal unitPrice,int units = 1)
         {
-            var orderItem = new OrderItem(productId, prodductName,unitPrice,units);
+            var orderItem = new Orderitem(productId, prodductName,unitPrice,units);
             _orderItems.Add(orderItem);
         }
 

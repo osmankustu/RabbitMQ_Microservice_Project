@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OrderService.Domain.AggregateModels.OrderAggregate
 {
-    public class OrderItem : BaseEntity, IValidatableObject
+    public class Orderitem : BaseEntity, IValidatableObject
     {
 
         public int ProductId { get; set; }
@@ -19,12 +19,12 @@ namespace OrderService.Domain.AggregateModels.OrderAggregate
 
         public int Units { get; set; }
 
-        protected OrderItem()
+        protected Orderitem()
         {
 
         }
 
-        public OrderItem(int productId, string productName, decimal unitPrice, int units)
+        public Orderitem(int productId, string productName, decimal unitPrice, int units)
         {
             ProductId = productId;
             ProductName = productName;
