@@ -8,7 +8,7 @@ namespace OrderService.Domain.SeedWork
 {
     public interface IUnitOfWork  :IDisposable
     {
-        Task<int> SaveChangeAsync(CancellationToken cancellationToken = default(CancellationToken));
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task<bool> SaveEntitesAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

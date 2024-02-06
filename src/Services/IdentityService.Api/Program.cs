@@ -4,8 +4,7 @@ using IdentityService.Api.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped<IIdentityService, IdentityService.Api.Application.Services.IdentityService>();
-builder.Services.ConfigureConsul(builder.Configuration);
+builder.Services.serviceRegistration(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

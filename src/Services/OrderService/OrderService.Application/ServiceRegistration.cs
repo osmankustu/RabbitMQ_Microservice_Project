@@ -12,12 +12,12 @@ namespace OrderService.Application
 {
     public static class ServiceRegistration
     {
-        public static IServiceCollection AddApplicationRegistration(this IServiceCollection services,Type type)
+        public static IServiceCollection AddApplicationRegistration(this IServiceCollection services)
         {
             var assm = Assembly.GetExecutingAssembly();
            
             services.AddAutoMapper(assm);
-            services.AddMediatR(assm);
+            services.AddMediatR(cfg=>cfg.RegisterServicesFromAssemblies(assm));
 
             return services;
         }

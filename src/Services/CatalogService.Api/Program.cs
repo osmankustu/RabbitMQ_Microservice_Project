@@ -7,8 +7,6 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions());
 // Add services to the container.
 builder.Services.ConfigureDbContext(builder.Configuration);
 builder.Services.ConfigureConsul(builder.Configuration);
-
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

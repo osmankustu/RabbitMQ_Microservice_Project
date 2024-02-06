@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OrderService.Domain.SeedWork
 {
-    public abstract class Enumeration : IConparable
+    public abstract class Enumeration : IComparable
     {
         public string Name { get; set; }
         
